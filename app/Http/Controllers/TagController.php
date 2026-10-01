@@ -14,9 +14,20 @@ class TagController extends Controller
     public function create(TagRequest $request, TagService $TagService)
     {
         $data = $request->validated();
-        $newTag = $TagService->create($data);
 
-        return response()->json($newTag, 201);
+        try {
+            $newTag = $TagService->create($data);
+
+            return response()->json([
+                'message' => 'Tag created successfully.',
+                'tag' => $newTag
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to create tag.',
+                "error" => $e->getMessage()
+                ], 500);
+        }
     }
 
     /**
@@ -24,9 +35,19 @@ class TagController extends Controller
      */
     public function getAll(TagService $TagService)
     {
-        $tags = $TagService->getAll();
+        try {
+            $tags = $TagService->getAll();
 
-        return response()->json($tags);
+            return response()->json([
+                'message' => 'Tags retrieved successfully.',
+                'tags' => $tags
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve tags.',
+                "error" => $e->getMessage()
+                ], 500);
+        }
     }
 
     /**
@@ -34,13 +55,23 @@ class TagController extends Controller
      */
     public function getOneById(Int $id, TagService $TagService)
     {
-        $tag = $TagService->getOneById($id);
+        try {
+            $tag = $TagService->getOneById($id);
 
-        if (!$tag) {
-            return response()->json(['message' => 'Tag not found.'], 404);
+            if (!$tag) {
+                return response()->json(['message' => 'Tag not found.'], 404);
+            }
+
+            return response()->json([
+                'message' => 'Tag found.',
+                'tag' => $tag
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve tag.',
+                "error" => $e->getMessage()
+                ], 500);
         }
-
-        return response()->json($tag);
     }
 
     /**
@@ -51,8 +82,11 @@ class TagController extends Controller
         $data = $request->validated();
 
         try {
-            $TagService->update($id, $data);
-            return response()->json(['message' => 'Tag updated successfully.']);
+            $tag = $TagService->update($id, $data);
+            return response()->json([
+                'message' => 'Tag updated successfully.',
+                'tag' => $tag
+            ]);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 404);
         }
@@ -65,7 +99,9 @@ class TagController extends Controller
     {
         try {
             $TagService->delete($id);
-            return response()->json(['message' => 'Tag deleted successfully.']);
+            return response()->json([
+                'message' => 'Tag deleted successfully.'
+            ]);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 404);
         }

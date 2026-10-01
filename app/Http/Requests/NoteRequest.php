@@ -12,7 +12,7 @@ class NoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class NoteRequest extends FormRequest
     {
         return [
             'user_id' => 'required|integer|exists:users,id',
-            'tag_id' => 'required|integer|exists:tags,id',
+            'tag_id' => 'required|integer|exists:tag,id',
             'text' => 'required|string|max:255',
         ];
     }

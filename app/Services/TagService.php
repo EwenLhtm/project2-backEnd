@@ -9,27 +9,22 @@ class TagService
     public function create(array $data): Tag
     {
         // Créez le tag en utilisant le modèle Tag
-        $newTag = Tag::create(['name' => $data['name']]);
-
-        // Ajoutez le nouveau tag à la bdd
-        session()->flash('message', 'Tag added!');
-
-        return $newTag;
+        return Tag::create(['name' => $data['name']]);
     }
 
-    public function getAll()
+    public function getAll(): \Illuminate\Database\Eloquent\Collection
     {
         // Récupérer tous les tags depuis la base de données
         return Tag::all();
     }
 
-    public function getOneById(Int $id)
+    public function getOneById(Int $id): ?Tag
     {
         // Récupérer un tag spécifique par son ID depuis la base de données
         return Tag::find($id);
     }
 
-    public function update(Int $id, $data)
+    public function update(Int $id,array $data) : Tag
     {
         // Vérifier que le tag existe
         $tag = Tag::find($id);
@@ -40,11 +35,10 @@ class TagService
         // Mettre à jour le tag avec les nouvelles données
         $tag->update(['name' => $data['name']]);
 
-        // Ajouter un message flash pour indiquer que la mise à jour a réussi
-        session()->flash('message', 'Tag updated!');
+        return $tag;
     }
 
-    public function delete(Int $id)
+    public function delete(Int $id): void
     {
         // Vérifier que le tag existe
         $tag = Tag::find($id);
@@ -53,9 +47,6 @@ class TagService
         }
 
         // Supprimer le tag de la base de données
-        $tag->delete();
-
-        // Ajouter un message flash pour indiquer que la suppression a réussi
-        session()->flash('message', 'Tag deleted!');
+        $tag->delete();;
     }
 }
