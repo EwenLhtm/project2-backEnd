@@ -45,6 +45,19 @@ Accept: application/json
 }
 ```
 
+Réponse `201 Created` :
+
+```json
+{
+  "message": "User registered successfully.",
+  "user": {
+    "id": 1,
+    "name": "Alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
 #### Connexion
 
 `POST /api/login`
@@ -56,7 +69,28 @@ Accept: application/json
 }
 ```
 
-La réponse contient un champ `token` à réutiliser pour les endpoints protégés.
+Réponse `200 OK` :
+
+```json
+{
+  "message": "User logged in successfully.",
+  "token": "1|example-token"
+}
+```
+
+Le champ `token` doit être réutilisé pour les endpoints protégés.
+
+#### Déconnexion
+
+`POST /api/logout`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "User logged out successfully."
+}
+```
 
 ### Notes
 
@@ -80,6 +114,87 @@ Corps attendu pour `POST /api/notes` et `PUT /api/notes/{id}` :
 }
 ```
 
+Réponse `201 Created` :
+
+```json
+{
+  "message": "Note created successfully.",
+  "note": {
+    "id": 1,
+    "user_id": 1,
+    "tag_id": 1,
+    "text": "Contenu de la note"
+  }
+}
+```
+
+#### Lister les notes
+
+`GET /api/notes`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Notes retrieved successfully.",
+  "notes": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "tag_id": 1,
+      "text": "Contenu de la note"
+    }
+  ]
+}
+```
+
+#### Récupérer une note
+
+`GET /api/notes/1`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Note found.",
+  "note": {
+    "id": 1,
+    "user_id": 1,
+    "tag_id": 1,
+    "text": "Contenu de la note"
+  }
+}
+```
+
+#### Modifier une note
+
+`PUT /api/notes/1`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Note updated successfully.",
+  "note": {
+    "user_id": 1,
+    "tag_id": 1,
+    "text": "Note mise à jour"
+  }
+}
+```
+
+#### Supprimer une note
+
+`DELETE /api/notes/1`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Note deleted successfully."
+}
+```
+
 ### Tags
 
 Toutes les routes ci-dessous nécessitent une authentification.
@@ -97,6 +212,80 @@ Corps attendu pour `POST /api/tags` et `PUT /api/tags/{id}` :
 ```json
 {
   "name": "Travail"
+}
+```
+
+Réponse `201 Created` :
+
+```json
+{
+  "message": "Tag created successfully.",
+  "tag": {
+    "id": 1,
+    "name": "Travail"
+  }
+}
+```
+
+#### Lister les tags
+
+`GET /api/tags`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Tags retrieved successfully.",
+  "tags": [
+    {
+      "id": 1,
+      "name": "Travail"
+    }
+  ]
+}
+```
+
+#### Récupérer un tag
+
+`GET /api/tags/1`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Tag found.",
+  "tag": {
+    "id": 1,
+    "name": "Travail"
+  }
+}
+```
+
+#### Modifier un tag
+
+`PUT /api/tags/1`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Tag updated successfully.",
+  "tag": {
+    "id": 1,
+    "name": "Personnel"
+  }
+}
+```
+
+#### Supprimer un tag
+
+`DELETE /api/tags/1`
+
+Réponse `200 OK` :
+
+```json
+{
+  "message": "Tag deleted successfully."
 }
 ```
 
