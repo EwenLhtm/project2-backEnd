@@ -1,59 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API Notes
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Documentation rapide de l'API Laravel du projet.
 
-## About Laravel
+## Démarrage
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Par défaut, l'API est accessible à l'adresse `http://localhost:8000/api`.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Toutes les réponses sont au format JSON. Les routes protégées nécessitent un
+token Sanctum dans l'en-tête :
 
-## Learning Laravel
+```http
+Authorization: Bearer <token>
+Accept: application/json
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Endpoints
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Authentification
 
-## Laravel Sponsors
+| Méthode | Endpoint | Authentification | Description |
+| --- | --- | --- | --- |
+| `POST` | `/register` | Non | Créer un compte |
+| `POST` | `/login` | Non | Se connecter et obtenir un token |
+| `POST` | `/logout` | Oui | Se déconnecter |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### Inscription
 
-### Premium Partners
+`POST /api/register`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```json
+{
+  "name": "Alice",
+  "email": "alice@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
 
-## Contributing
+#### Connexion
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+`POST /api/login`
 
-## Code of Conduct
+```json
+{
+  "email": "alice@example.com",
+  "password": "password123"
+}
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+La réponse contient un champ `token` à réutiliser pour les endpoints protégés.
 
-## Security Vulnerabilities
+### Notes
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Toutes les routes ci-dessous nécessitent une authentification.
 
-## License
+| Méthode | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/notes` | Créer une note |
+| `GET` | `/notes` | Lister les notes |
+| `GET` | `/notes/{id}` | Récupérer une note |
+| `PUT` | `/notes/{id}` | Modifier une note |
+| `DELETE` | `/notes/{id}` | Supprimer une note |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Corps attendu pour `POST /api/notes` et `PUT /api/notes/{id}` :
+
+```json
+{
+  "user_id": 1,
+  "tag_id": 1,
+  "text": "Contenu de la note"
+}
+```
+
+### Tags
+
+Toutes les routes ci-dessous nécessitent une authentification.
+
+| Méthode | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/tags` | Créer un tag |
+| `GET` | `/tags` | Lister les tags |
+| `GET` | `/tags/{id}` | Récupérer un tag |
+| `PUT` | `/tags/{id}` | Modifier un tag |
+| `DELETE` | `/tags/{id}` | Supprimer un tag |
+
+Corps attendu pour `POST /api/tags` et `PUT /api/tags/{id}` :
+
+```json
+{
+  "name": "Travail"
+}
+```
+
+## Validation
+
+- Un utilisateur doit fournir un nom, un email valide et un mot de passe d'au
+  moins 8 caractères confirmé.
+- Le champ `text` d'une note est limité à 255 caractères.
+- `user_id` et `tag_id` doivent correspondre à des ressources existantes.
+- Le nom d'un tag est obligatoire, unique et limité à 50 caractères.
+
+## Route web
+
+| Méthode | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/` | Affiche la page d'accueil Laravel |
