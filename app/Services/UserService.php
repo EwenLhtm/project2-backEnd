@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserService
 {
@@ -34,5 +35,12 @@ class UserService
     {
         // Révoquez tous les tokens de l'utilisateur
         $user->tokens()->delete();
+    }
+
+    public function updateProfile(User $user, array $data): User
+    {
+        // Mettez à jour les informations de l'utilisateur
+        $user->update($data);
+        return $user;
     }
 }

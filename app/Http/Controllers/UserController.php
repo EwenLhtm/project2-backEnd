@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UserPasswordRequest;
 
 class UserController extends Controller
 {
@@ -63,6 +64,58 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to log out user.',
+                "error" => $e->getMessage()
+                ], 500);
+        }
+    }
+
+    public function getUser(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
+    public function updateProfile(Request $request, UserService $userService)
+    {
+        $data = $request->only(['name', 'email']);
+
+        try {
+            $updatedUser = $userService->updateProfile($request->user(), $data);
+
+            return response()->json([
+                'message' => 'User profile updated successfully.',
+                'user' => $updatedUser
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update user profile.',
+                "error" => $e->getMessage()
+                ], 500);
+        }
+    }
+
+    public function updatePassword(UserPasswordRequest $request, UserService $userService)
+    {
+        $data = $request->validated();
+
+        try {
+            $user = $request->user();
+
+            // Vérifiez si le mot de passe actuel est correct
+            if (!password_verify($data['current_password'], $user->password)) {
+                return response()->json([
+                    'message' => 'Current password is incorrect.'
+                ], 400);
+            }
+
+            // Mettez à jour le mot de passe
+            $userService->updateProfile($user, ['password' => bcrypt($data['new_password'])]);
+
+            return response()->json([
+                'message' => 'Password updated successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update password.',
                 "error" => $e->getMessage()
                 ], 500);
         }
