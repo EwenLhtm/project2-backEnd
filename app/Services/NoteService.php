@@ -16,10 +16,10 @@ class NoteService
         ]);
     }
 
-    public function getAll(): \Illuminate\Database\Eloquent\Collection
+    public function getAll(Int $userId): \Illuminate\Database\Eloquent\Collection
     {
-        // Récupérer toutes les notes depuis la base de données
-        return Note::all();
+        // Récupérer toutes les notes fr l'utilisateur connecté depuis la base de données
+        return Note::where('user_id', $userId)->get();
     }
 
     public function getOneById(Int $id): ?Note

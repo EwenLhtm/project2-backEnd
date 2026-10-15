@@ -33,10 +33,10 @@ class NoteController extends Controller
     /**
      * Récupérer toutes les notes.
      */
-    public function getAll(NoteService $noteService)
+    public function getAll(NoteService $noteService, Request $request)
     {
         try {
-            $notes = $noteService->getAll();
+            $notes = $noteService->getAll($request->user()->id);
 
             return response()->json([
                 'message' => 'Notes retrieved successfully.',
