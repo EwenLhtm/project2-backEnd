@@ -4,6 +4,7 @@ use App\http\Controllers\NoteController;
 use App\http\Controllers\TagController;
 use App\http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 // User routes
 Route::post('/register', [UserController::class, 'register']);
@@ -27,4 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tags/{id}', [TagController::class, 'getOneById']);
     Route::put('/tags/{id}', [TagController::class, 'update']);
     Route::delete('/tags/{id}', [TagController::class, 'delete']);
+});
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
